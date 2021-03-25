@@ -19,15 +19,24 @@ class App extends React.Component {
     e.preventDefault();
     const url=`https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${this.state.city}&format=json`;
     console.log(url);
-    const location = await axios.get(url);
-    const latitude=location.data[0].lat;
-    const longitude=location.data[0].lon;
+    const result=await axios.get(url);
+    const latitude=result.data[0].lat;
+    const longitude=result.data[0].lon;
     console.log(latitude);
     console.log(longitude);
     this.setState({display: true,
                    srclink: `https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=${latitude},${longitude}&zoom=13`})
     console.log(this.state.srclink);
     console.log(this.state.display);
+
+    const SERVER = 'http://localhost:3001';
+    axios.get(`${SERVER}/weather`, { params: {lon: longitude, lat: latitude}})
+    .then(weather => {
+      console.log(weather);
+    })
+    .catch(err => {
+      console.error(err);
+    })
 
 
   }
