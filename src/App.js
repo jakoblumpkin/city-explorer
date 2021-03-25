@@ -10,33 +10,29 @@ class App extends React.Component {
       location: {},
       city: '',
       display: false,
-      srclink: ''
+      srclink: '',
+      weatherData:''
     }
   }
 
 
   locationSearch = async(e) => {
     e.preventDefault();
+    //first api which graps a map and display
     const url=`https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATION_KEY}&q=${this.state.city}&format=json`;
-    console.log(url);
     const result=await axios.get(url);
     const latitude=result.data[0].lat;
     const longitude=result.data[0].lon;
-    console.log(latitude);
-    console.log(longitude);
     this.setState({display: true,
-                   srclink: `https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=${latitude},${longitude}&zoom=13`})
-    console.log(this.state.srclink);
-    console.log(this.state.display);
+                   srclink: `https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATION_KEY}&center=${latitude},${longitude}&zoom=13`});
 
-    const SERVER = 'http://localhost:3001';
-    axios.get(`${SERVER}/weather`, { params: {lon: longitude, lat: latitude}})
-    .then(weather => {
-      console.log(weather);
-    })
-    .catch(err => {
-      console.error(err);
-    })
+
+    //weather
+    const SERVER = `http://localhost:3001`;
+    const total=await axios.get(`${SERVER}/weather`, { params: {lon: longitude, lat: latitude}});
+    const weatherData=total.data;
+    this.setState({weatherData: weatherData});
+    
 
 
   }
@@ -54,6 +50,7 @@ class App extends React.Component {
          {this.state.display &&
          <>
          <h2>{this.state.city}</h2>
+         <p>{this.state.weatherData}</p>
          <img src={this.state.srclink} alt='map'/>
          </>}
       </header>
